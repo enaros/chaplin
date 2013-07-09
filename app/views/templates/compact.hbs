@@ -1,0 +1,24 @@
+<div class="thumbnail">
+  <div class="img" style="background-image:url({{photo}}?{{lastmoddate}})">
+  	<div class="map"></div>
+  	<div class="drag-drop">Drop image here</div>
+  </div>
+  <a class='btn edit-pic' data-toggle="tooltip" title="click to change picture"><i class='icon-pencil'></i></a>
+  <input type='file' class='hidden'></input>
+  <div class="caption">
+    <h3 contenteditable="true" class="name">{{name}}</h3>
+    <div class="options">
+      <i class="icon-home"></i> <p contenteditable="true" class="address">{{address}}</p>
+    	<i class="icon-user"></i> <p contenteditable="true" class="phone">{{phone}}</p>
+    </div>
+    <p contenteditable="true" class="description">{{description}}</p>
+    <div class="text-right">
+    	<a class="btn -btn-mini btn-toggle-holes btn-primary">holes</a>
+    	<a class="btn -btn-mini btn-map" data-toggle="button"><i class="icon-map-marker"></i></a>
+    	<a class="btn -btn-mini btn-danger delete"><i class="icon-trash icon-white"></i></a>
+    </div>
+  </div>
+</div>
+<div class='thumbnail back'>
+  {{! holes list will be rendered here }}
+</div>

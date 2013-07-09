@@ -1,0 +1,90 @@
+@import 'nib'
+
+.drag-drop
+	height: 100%
+	width: 100%
+	background: #888;
+	border: 5px dashed #333
+	text-align: center
+	line-height: 193px
+	font-weight: bold
+	color: #fff
+	opacity: 0
+	position: absolute
+	top: 0
+	text-shadow: 1px 1px #333
+	transition: all .5s
+
+.edit-pic
+	position: absolute
+	top: 0
+	margin-top: 8px
+	margin-left: 4px
+	opacity: 0
+	&:hover
+		opacity: 1
+
+.home-page
+	
+	.span3
+		position: relative
+		perspective: 600px
+
+		&.flipped
+			.thumbnail
+				transform: rotateY(180deg)
+
+			.back
+				transform: rotateY(0deg)
+
+
+	// margin-top: 30px
+	// padding: 5px
+	.thumbnails
+
+		li:nth-child(4n+1) 
+			margin-left: 0
+			clear: left
+		
+		.thumbnail
+			backface-visibility: hidden
+			transition: 1s
+			transform-style: preserve-3d
+			min-height: 680px
+
+			&:hover
+				> .edit-pic
+					opacity: .5
+
+			.description
+				min-height: 91px
+				background: #f0f0f0
+				padding: 4px
+				border-radius: 5px
+
+			.img
+				background-repeat: no-repeat
+				background-position: 50% 50%
+				background-size: cover
+				background-color: #ddd
+				height: 400px
+				position: relative
+				border-radius: 3px
+			
+				img
+					max-width: none
+
+				.map 
+					display: none
+					height: 100%
+					z-index: 5
+
+				
+
+			.options
+				.icon-home, .icon-user
+					float: left
+					margin-top: 3px
+					margin-left: 1px
+				p
+					padding-left: 20px;

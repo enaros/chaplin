@@ -1,0 +1,56 @@
+@import 'nib'
+
+.home-page
+	
+	.thumbnails
+
+		.back
+			backface-visibility: hidden
+			transform: rotateY(-180deg)
+			position: absolute
+			background: #fff
+			top: 0
+			left: 0
+			backface-visibility: hidden
+			width: 100%
+			height: 100%
+			
+			.go-back
+				position: absolute
+				top: 13px
+
+			.holes-input
+				position: relative
+				button
+					position: absolute
+					right: 0
+					border-top-left-radius: 0
+					border-bottom-left-radius: 0
+				input
+					padding-right: 44px
+
+			.holes-list
+				margin:0
+
+				.btn-group
+					position: absolute
+					right: 0
+					margin-right: 3px
+					margin-top: -1px
+
+				li.hole-item:not(.alert-error):nth-child(2n+1)
+					background: #e9e9e9
+
+				li.hole-item
+					padding: 5px 3px
+					border-radius: 3px
+					margin: 0
+					margin-bottom: 3px
+					list-style-type: none
+					position: relative
+					transition: background .5s
+
+					span.text
+						width: 100%
+						padding-right: 34px
+						display: inline-block
