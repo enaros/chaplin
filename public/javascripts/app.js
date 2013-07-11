@@ -80,13 +80,15 @@
 })();
 
 window.require.register("application", function(exports, require, module) {
-  var Application, Chaplin, routes, _ref,
+  var Application, Chaplin, SessionController, routes, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Chaplin = require('chaplin');
 
   routes = require('routes');
+
+  SessionController = require('controllers/session-controller');
 
   module.exports = Application = (function(_super) {
     __extends(Application, _super);
@@ -107,11 +109,17 @@ window.require.register("application", function(exports, require, module) {
       this.initLayout();
       this.initComposer();
       this.initMediator();
+      this.initControllers();
       this.startRouting();
       return typeof Object.freeze === "function" ? Object.freeze(this) : void 0;
     };
 
+    Application.prototype.initControllers = function() {
+      return new SessionController();
+    };
+
     Application.prototype.initMediator = function() {
+      Chaplin.mediator.user = null;
       return Chaplin.mediator.seal();
     };
 
@@ -154,7 +162,7 @@ window.require.register("controllers/base/controller", function(exports, require
   
 });
 window.require.register("controllers/home-controller", function(exports, require, module) {
-  var AboutView, Configuration, ConfigurationView, Controller, GCCollection, HomeController, HomePageView, _ref,
+  var AboutView, Chaplin, Configuration, ConfigurationView, Controller, GCCollection, HomeController, HomePageView, mediator, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -170,6 +178,10 @@ window.require.register("controllers/home-controller", function(exports, require
 
   GCCollection = require('models/gc-collection');
 
+  Chaplin = require('chaplin');
+
+  mediator = Chaplin.mediator;
+
   module.exports = HomeController = (function(_super) {
     __extends(HomeController, _super);
 
@@ -180,7 +192,21 @@ window.require.register("controllers/home-controller", function(exports, require
 
     HomeController.prototype.title = 'SteadyMotion';
 
+    HomeController.prototype.initialize = function(opt) {
+      var _this = this;
+      this.subscribeEvent('loginSuccess', function() {
+        console.log(_this, opt.route);
+        return mediator.publish("!router:route", "/");
+      });
+      return this.subscribeEvent('logoutSuccess', function() {
+        return mediator.publish("!router:route", "/about");
+      });
+    };
+
     HomeController.prototype.index = function() {
+      if (!mediator.user) {
+        return;
+      }
       this.courses = new GCCollection();
       return this.view = new HomePageView({
         region: 'main',
@@ -189,6 +215,9 @@ window.require.register("controllers/home-controller", function(exports, require
     };
 
     HomeController.prototype.conf = function() {
+      if (!mediator.user) {
+        return;
+      }
       return this.view = new ConfigurationView({
         region: 'main',
         model: new Configuration
@@ -206,13 +235,75 @@ window.require.register("controllers/home-controller", function(exports, require
   })(Controller);
   
 });
+window.require.register("controllers/session-controller", function(exports, require, module) {
+  var Chaplin, Controller, SessionsController, mediator, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Controller = require('controllers/base/controller');
+
+  Chaplin = require('chaplin');
+
+  mediator = Chaplin.mediator;
+
+  module.exports = SessionsController = (function(_super) {
+    __extends(SessionsController, _super);
+
+    function SessionsController() {
+      _ref = SessionsController.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    SessionsController.prototype.initialize = function(opt) {
+      var _this = this;
+      this.user = new StackMob.User({
+        username: 'emiliano'
+      });
+      this.user.isLoggedIn({
+        yes: function() {
+          mediator.user = _this.user;
+          return mediator.publish('loginSuccess', _this.user);
+        },
+        no: function() {
+          return console.log("Not logged in.");
+        }
+      });
+      this.subscribeEvent('loginAttempt', this.loginAttempt);
+      return this.subscribeEvent('logoutAttempt', this.logoutAttempt);
+    };
+
+    SessionsController.prototype.loginAttempt = function(password) {
+      this.user.set('password', password);
+      return this.user.login(false, {
+        success: function(model) {
+          mediator.user = model;
+          return mediator.publish('loginSuccess', mediator.user);
+        },
+        error: function(model, response) {
+          return mediator.publish('loginFailed', model, response);
+        }
+      });
+    };
+
+    SessionsController.prototype.logoutAttempt = function() {
+      this.user.logout();
+      mediator.user = null;
+      return mediator.publish('logoutSuccess');
+    };
+
+    return SessionsController;
+
+  })(Controller);
+  
+});
 window.require.register("initialize", function(exports, require, module) {
   var Application;
 
   Application = require('application');
 
   $(function() {
-    return (new Application).initialize();
+    window.App = new Application;
+    return App.initialize();
   });
   
 });
@@ -956,13 +1047,17 @@ window.require.register("views/file-view", function(exports, require, module) {
   
 });
 window.require.register("views/header-view", function(exports, require, module) {
-  var HeaderView, View, template, _ref,
+  var Chaplin, HeaderView, View, mediator, template, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   View = require('views/base/view');
 
   template = require('views/templates/header');
+
+  Chaplin = require('chaplin');
+
+  mediator = Chaplin.mediator;
 
   module.exports = HeaderView = (function(_super) {
     __extends(HeaderView, _super);
@@ -985,15 +1080,52 @@ window.require.register("views/header-view", function(exports, require, module) 
     HeaderView.prototype.initialize = function(options) {
       HeaderView.__super__.initialize.apply(this, arguments);
       this.route = options.route;
-      console.log(this.route);
+      this.subscribeEvent('loginSuccess', this.loginSuccess);
+      this.subscribeEvent('loginFailed', this.loginFailed);
+      this.subscribeEvent('!router:route', this.routeChanged);
       return this.initButtons();
     };
 
     HeaderView.prototype.initButtons = function() {
+      this.delegate('submit', '#login-form', this.login);
+      this.delegate('click', '#logout-form button', this.logout);
       this.delegate('click', 'li', this.click);
       return this.delegate('click', '.brand', function() {
         return this.selectMenuItem(this.$('ul li:first'));
       });
+    };
+
+    HeaderView.prototype.routeChanged = function(path, opts) {
+      var item;
+      console.log(path);
+      item = path.substr(1);
+      if (item === "") {
+        item = 'list';
+      }
+      return this.selectMenuItem(this.$("." + item));
+    };
+
+    HeaderView.prototype.login = function(e) {
+      e.preventDefault();
+      console.log('login');
+      return mediator.publish('loginAttempt', this.$('#login-form input').val());
+    };
+
+    HeaderView.prototype.loginFailed = function() {
+      this.$('#login-form').addClass('error');
+      return this.$('#login-form input').select();
+    };
+
+    HeaderView.prototype.loginSuccess = function() {
+      this.$('#login-form').hide().removeClass('error');
+      this.$('#logout-form').fadeIn();
+      return console.log('loginSuccess');
+    };
+
+    HeaderView.prototype.logout = function() {
+      this.$('#logout-form').hide();
+      this.$('#login-form').fadeIn();
+      return mediator.publish('logoutAttempt');
     };
 
     HeaderView.prototype.click = function(e) {
@@ -1009,7 +1141,9 @@ window.require.register("views/header-view", function(exports, require, module) 
 
     HeaderView.prototype.getTemplateData = function() {
       return {
-        route: this.route.action
+        route: this.route.action,
+        showLogin: mediator.user ? "hide" : "",
+        showWelcome: mediator.user ? "" : "hide"
       };
     };
 
@@ -1367,7 +1501,15 @@ window.require.register("views/templates/header", function(exports, require, mod
     if (stack1 = helpers.route) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
     else { stack1 = depth0.route; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
     buffer += escapeExpression(stack1)
-      + "\">\n		    <li class=\"list\"><a href=\"/\">List</a></li>\n		    <li class=\"conf\"><a href=\"conf\">Configuration</a></li>\n		    <li class=\"about\"><a href=\"about\">About</a></li>\n		  </ul>\n		</div>\n	</div>\n</div>";
+      + "\">\n		    <li class=\"list\"><a href=\"/\">List</a></li>\n		    <li class=\"conf\"><a href=\"conf\">Configuration</a></li>\n		    <li class=\"about\"><a href=\"about\">About</a></li>\n		  </ul>\n		  <form id=\"login-form\" class=\"navbar-form pull-right control-group ";
+    if (stack1 = helpers.showLogin) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+    else { stack1 = depth0.showLogin; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+    buffer += escapeExpression(stack1)
+      + "\">\n			  <div class=\"input-append\">\n				  <input type=\"text\" class=\"span2\" />\n				  <button type=\"submit\" class=\"btn btn-success\">Login</button>\n				</div>\n			</form>\n			<div id=\"logout-form\" class=\"pull-right ";
+    if (stack1 = helpers.showWelcome) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+    else { stack1 = depth0.showWelcome; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+    buffer += escapeExpression(stack1)
+      + "\">\n				<button class=\"btn btn-inverse\">Logout</button>\n			</div>\n		</div>\n	</div>\n</div>";
     return buffer;
     });
 });

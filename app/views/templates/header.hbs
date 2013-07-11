@@ -13,6 +13,15 @@
 		    <li class="conf"><a href="conf">Configuration</a></li>
 		    <li class="about"><a href="about">About</a></li>
 		  </ul>
+		  <form id="login-form" class="navbar-form pull-right control-group {{showLogin}}">
+			  <div class="input-append">
+				  <input type="text" class="span2" />
+				  <button type="submit" class="btn btn-success">Login</button>
+				</div>
+			</form>
+			<div id="logout-form" class="pull-right {{showWelcome}}">
+				<button class="btn btn-inverse">Logout</button>
+			</div>
 		</div>
 	</div>
 </div>

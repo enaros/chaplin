@@ -6792,6 +6792,12 @@ table {
 		&:last-child
 			margin-right: 0
 */
+#header input[type='text'] {
+  height: 30px;
+}
+#header .input-append {
+  margin-bottom: 0;
+}
 .navbar .nav.select-index > .list > a,
 .navbar .nav.select-conf > .conf > a,
 .navbar .nav.select-about > .about > a {

@@ -79,6 +79,18 @@
   globals.require.brunch = true;
 })();
 
+window.require.register("test/controllers/session-controller-test", function(exports, require, module) {
+  var Session;
+
+  Session = require('controllers/session-controller');
+
+  describe('Session', function() {
+    return beforeEach(function() {
+      return this.controller = new Session();
+    });
+  });
+  
+});
 window.require.register("test/initialize", function(exports, require, module) {
   var test, tests, _i, _len;
 
