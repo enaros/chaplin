@@ -1,4 +1,5 @@
 Controller = require 'controllers/base/controller'
+AboutView = require 'views/about-view'
 Chaplin = require 'chaplin'
 
 mediator = Chaplin.mediator

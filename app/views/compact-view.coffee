@@ -13,12 +13,12 @@ module.exports = class CompactView extends FileView
 
 	render: ->
 		super
-		@$el.find('.edit-pic').tooltip { placement:'right' }
+		# @$('.edit-pic').tooltip { placement:'right' }
 		@subview 'holesList', new HolesListView 
 			container: @$el.find('.back')
 			collection: new HolesCollection @model.get 'holes' or new Array
 			parentModel: @model
-		console.log @model
+		
 		@renderMap()
 
 	initialize: (options) ->

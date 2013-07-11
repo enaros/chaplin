@@ -195,6 +195,18 @@ window.require.register("test/views/home-page-view-test", function(exports, requ
   });
   
 });
+window.require.register("test/views/login-view-test", function(exports, require, module) {
+  var LoginView;
+
+  LoginView = require('views/login-view');
+
+  describe('LoginView', function() {
+    return beforeEach(function() {
+      return this.view = new LoginView();
+    });
+  });
+  
+});
 window.require.register("test/views/site-view-test", function(exports, require, module) {
   var SiteView;
 

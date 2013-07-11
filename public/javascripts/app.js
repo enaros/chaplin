@@ -162,13 +162,15 @@ window.require.register("controllers/base/controller", function(exports, require
   
 });
 window.require.register("controllers/home-controller", function(exports, require, module) {
-  var AboutView, Chaplin, Configuration, ConfigurationView, Controller, GCCollection, HomeController, HomePageView, mediator, _ref,
+  var AboutView, Chaplin, Configuration, ConfigurationView, Controller, GCCollection, HomeController, HomePageView, LoginView, mediator, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Controller = require('controllers/base/controller');
 
   HomePageView = require('views/home-page-view');
+
+  LoginView = require('views/login-view');
 
   AboutView = require('views/about-view');
 
@@ -205,6 +207,7 @@ window.require.register("controllers/home-controller", function(exports, require
 
     HomeController.prototype.index = function() {
       if (!mediator.user) {
+        this.login();
         return;
       }
       this.courses = new GCCollection();
@@ -216,6 +219,7 @@ window.require.register("controllers/home-controller", function(exports, require
 
     HomeController.prototype.conf = function() {
       if (!mediator.user) {
+        this.login();
         return;
       }
       return this.view = new ConfigurationView({
@@ -230,17 +234,25 @@ window.require.register("controllers/home-controller", function(exports, require
       });
     };
 
+    HomeController.prototype.login = function() {
+      return this.view = new LoginView({
+        region: 'main'
+      });
+    };
+
     return HomeController;
 
   })(Controller);
   
 });
 window.require.register("controllers/session-controller", function(exports, require, module) {
-  var Chaplin, Controller, SessionsController, mediator, _ref,
+  var AboutView, Chaplin, Controller, SessionsController, mediator, _ref,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Controller = require('controllers/base/controller');
+
+  AboutView = require('views/about-view');
 
   Chaplin = require('chaplin');
 
@@ -753,15 +765,11 @@ window.require.register("views/compact-view", function(exports, require, module)
 
     CompactView.prototype.render = function() {
       CompactView.__super__.render.apply(this, arguments);
-      this.$el.find('.edit-pic').tooltip({
-        placement: 'right'
-      });
       this.subview('holesList', new HolesListView({
         container: this.$el.find('.back'),
         collection: new HolesCollection(this.model.get('holes' || new Array)),
         parentModel: this.model
       }));
-      console.log(this.model);
       return this.renderMap();
     };
 
@@ -1373,6 +1381,32 @@ window.require.register("views/home-page-view", function(exports, require, modul
   })(CollectionView);
   
 });
+window.require.register("views/login-view", function(exports, require, module) {
+  var LoginView, View, template, _ref,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  View = require('views/base/view');
+
+  template = require('views/templates/login');
+
+  module.exports = LoginView = (function(_super) {
+    __extends(LoginView, _super);
+
+    function LoginView() {
+      _ref = LoginView.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    LoginView.prototype.template = template;
+
+    LoginView.prototype.autoRender = true;
+
+    return LoginView;
+
+  })(View);
+  
+});
 window.require.register("views/site-view", function(exports, require, module) {
   var SiteView, View, template, _ref,
     __hasProp = {}.hasOwnProperty,
@@ -1551,6 +1585,16 @@ window.require.register("views/templates/home", function(exports, require, modul
 
 
     return "<div style=\"float:right; margin-top: 20px\">\n	<button class=\"btn btn-success btn-add-gc\"><i class=\"icon-plus icon-white\"></i> Add</button>\n</div>\n<h1>List</h1>\n<ul class='thumbnails'></ul>\n<!--\n<p class='loading'>Loading...</p>\n<p class='fallback'>No items</p>\n-->";
+    });
+});
+window.require.register("views/templates/login", function(exports, require, module) {
+  module.exports = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+    this.compilerInfo = [4,'>= 1.0.0'];
+  helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+    
+
+
+    return "please log in";
     });
 });
 window.require.register("views/templates/site", function(exports, require, module) {
