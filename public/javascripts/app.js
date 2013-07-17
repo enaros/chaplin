@@ -652,7 +652,9 @@ window.require.register("routes", function(exports, require, module) {
   module.exports = function(match) {
     match('', 'home#index');
     match('conf', 'home#conf');
-    return match('about', 'home#about');
+    match('about', 'home#about');
+    match('login', 'home#login');
+    return match('logout', 'home#logout');
   };
   
 });
@@ -1594,7 +1596,7 @@ window.require.register("views/templates/login", function(exports, require, modu
     
 
 
-    return "please log in";
+    return "<div class=\"alert alert-error\" style='margin-top:50px'>\n	<button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>\n	<h4>Attention!!</h4> \n	Please log in before continue\n</div>";
     });
 });
 window.require.register("views/templates/site", function(exports, require, module) {
